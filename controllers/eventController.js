@@ -4,7 +4,21 @@ const {
   createEventModel,
 } = require("../models/eventModel");
 
-const getAllEvents = async (req, res, next) => {};
+const getAllEvents = async (req, res, next) => {
+  try {
+    const results = await getAllEventsModel();
+    res.status(200).json({
+      success: true,
+      data: results,
+    });
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching events",
+    });
+  }
+};
 
 const createEvent = async (req, res, next) => {
   const body = await req.body;

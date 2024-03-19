@@ -2,10 +2,10 @@ const { query } = require("../db/connect");
 
 async function getAllEventsModel() {
   const result = await query({
-    query: `
-    "SELECT * FROM events"
-  `,
+    query: "SELECT * FROM events",
+    values: [],
   });
+  return result;
 }
 
 async function createEventModel(eventData) {
