@@ -1,41 +1,23 @@
-const mysql = require("mysql");
+const mysql = require("mysql2/promise");
 
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-});
-
-connection.connect((error) => {
-  if (error) throw error;
-
-  connection.query("CREATE DATABASE IF NOT EXISTS tasks", (error, results) => {
-    if (error) {
-      if (error.code === "ER_DB_CREATE_EXISTS") {
-        console.log("Database already exists");
-      } else {
-        throw error; // Handle other potential errors
-      }
-    } else {
-      console.log("Database created or already existed");
-    }
+//this function is used to connect db and query the database
+async function query({ query, values = [] }) {
+  const dbconnection = await mysql.createConnection({
+    host: "localhost",
+    database: "tasks",
+    user: "root",
+    password: "",
   });
 
-  connection.query("USE tasks", (error, results) => {
-    if (error) throw error;
-  });
+  try {
+    const [results] = await dbconnection.execute(query, values);
+    dbconnection.end();
+    return results;
+  } catch (error) {
+    console.log(error);
+    dbconnection.end();
+    return { error };
+  }
+}
 
-  connection.query(
-    `CREATE TABLE events ( 
-          id INT PRIMARY KEY,
-          title VARCHAR(255),
-          startDate DATETIME NOT NULL,
-          endDate DATETIME NOT NULL,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )`,
-    (error, results) => {
-      if (error) throw error;
-      console.log("Events table created or already exists");
-    }
-  );
-});
+module.exports = { query };

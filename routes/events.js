@@ -5,7 +5,7 @@ const {
   getSingleEvent,
   updateEvent,
   deleteEvent,
-} = require("../controllers/productController");
+} = require("../controllers/eventController");
 const router = express.Router();
 
 router.route("/events").get(getAllEvents).post(createEvent);
