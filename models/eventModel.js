@@ -1,5 +1,10 @@
 const { query } = require("../db/connect");
 
+function extractDate(datetimeStr) {
+  const datePart = datetimeStr.split("T")[0];
+  return datePart;
+}
+
 async function getAllEventsModel() {
   const result = await query({
     query: "SELECT * FROM events",
@@ -14,7 +19,7 @@ async function createEventModel(eventData) {
     INSERT INTO events (id,title, startDate, endDate) 
   VALUES (?,?, ?,?)
   `,
-    values: [1, eventData, "2020-09-09", "2020-09-09"],
+    values: [eventData.id, eventData.title, eventData.start, eventData.end],
   });
 }
 
@@ -27,8 +32,30 @@ async function getEventsByIdModel(eventId) {
   });
 }
 
+async function deleteEventsByIdModel(eventId) {
+  const result = await query({
+    query: `
+    DELETE FROM events WHERE id = ?
+  `,
+    values: [eventId],
+  });
+}
+
+async function updateEventsByIdModel(eventId, newTitle) {
+  const result = await query({
+    query: `
+      UPDATE events 
+      SET title = ?
+      WHERE id = ?
+    `,
+    values: [newTitle, eventId],
+  });
+}
+
 module.exports = {
   getAllEventsModel,
   getEventsByIdModel,
   createEventModel,
+  deleteEventsByIdModel,
+  updateEventsByIdModel,
 };
